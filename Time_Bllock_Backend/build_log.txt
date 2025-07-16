@@ -1,0 +1,150 @@
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 32B done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 transferring context: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:20-alpine
+#3 DONE 3.6s
+
+#4 [base 1/4] FROM docker.io/library/node:20-alpine@sha256:be56e91681a8ec1bba91e3006039bd228dc797fd984794a3efedab325b36e679
+#4 DONE 0.0s
+
+#5 [base 2/4] WORKDIR /app
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 1.28kB done
+#6 DONE 0.0s
+
+#7 [base 3/4] COPY package.json package-lock.json* ./
+#7 DONE 0.1s
+
+#8 [base 4/4] RUN npm install
+#8 11.51 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+#8 12.10 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+#8 13.36 npm warn deprecated domexception@4.0.0: Use your platform's native DOMException instead
+#8 14.48 npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+#8 74.17 
+#8 74.17 added 662 packages, and audited 663 packages in 1m
+#8 74.17 
+#8 74.17 161 packages are looking for funding
+#8 74.17   run `npm fund` for details
+#8 74.18 
+#8 74.18 found 0 vulnerabilities
+#8 74.18 npm notice
+#8 74.18 npm notice New major version of npm available! 10.8.2 -> 11.4.1
+#8 74.18 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.1
+#8 74.18 npm notice To update run: npm install -g npm@11.4.1
+#8 74.18 npm notice
+#8 DONE 75.1s
+
+#9 [builder 1/4] WORKDIR /app
+#9 DONE 0.0s
+
+#10 [builder 2/4] COPY . .
+#10 DONE 0.0s
+
+#11 [builder 3/4] RUN npm run build
+#11 0.443 
+#11 0.443 > frontend@0.1.0 build
+#11 0.443 > next build
+#11 0.443 
+#11 1.407 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#11 1.408 This information is used to shape Next.js' roadmap and prioritize features.
+#11 1.408 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#11 1.408 https://nextjs.org/telemetry
+#11 1.408 
+#11 1.604    ▲ Next.js 15.3.2
+#11 1.604 
+#11 1.620    Creating an optimized production build ...
+#11 18.76  ✓ Compiled successfully in 11.0s
+#11 18.77    Linting and checking validity of types ...
+#11 29.18    Collecting page data ...
+#11 32.90    Generating static pages (0/5) ...
+#11 34.50    Generating static pages (1/5) 
+#11 34.50    Generating static pages (2/5) 
+#11 34.50    Generating static pages (3/5) 
+#11 34.50  ✓ Generating static pages (5/5)
+#11 35.28    Finalizing page optimization ...
+#11 35.28    Collecting build traces ...
+#11 47.81 
+#11 47.82 Route (app)                                 Size  First Load JS
+#11 47.82 ┌ ○ /                                    2.34 kB         103 kB
+#11 47.82 └ ○ /_not-found                            977 B         102 kB
+#11 47.82 + First Load JS shared by all             101 kB
+#11 47.82   ├ chunks/4bd1b696-1897831b3bbea01c.js  53.2 kB
+#11 47.82   ├ chunks/684-1281e00e4f45a481.js       45.9 kB
+#11 47.82   └ other shared chunks (total)          1.89 kB
+#11 47.82 
+#11 47.82 
+#11 47.82 ○  (Static)  prerendered as static content
+#11 47.82 
+#11 DONE 48.2s
+
+#12 [builder 4/4] RUN echo "==== START DIAGNOSTIC FILE LISTING in /app ====" && ls -la /app && echo "==== END DIAGNOSTIC FILE LISTING in /app ====" && echo "==== START DIAGNOSTIC FILE LISTING in /app/.next ====" && ls -la /app/.next && echo "==== END DIAGNOSTIC FILE LISTING in /app/.next ===="
+#12 0.395 ==== START DIAGNOSTIC FILE LISTING in /app ====
+#12 0.398 total 436
+#12 0.399 drwxr-xr-x    1 root     root          4096 May 25 18:23 .
+#12 0.399 drwxr-xr-x    1 root     root          4096 May 25 18:23 ..
+#12 0.399 -rw-r--r--    1 root     root          6148 May 25 12:56 .DS_Store
+#12 0.399 -rw-r--r--    1 root     root           480 May 25 12:33 .gitignore
+#12 0.399 drwxr-xr-x    7 root     root          4096 May 25 18:23 .next
+#12 0.399 -rw-r--r--    1 root     root          1081 May 25 18:02 Dockerfile
+#12 0.399 -rw-r--r--    1 root     root          1450 May 25 12:33 README.md
+#12 0.399 -rw-r--r--    1 root     root           393 May 25 12:33 eslint.config.mjs
+#12 0.399 -rw-r--r--    1 root     root           860 May 25 12:48 jest.config.js
+#12 0.399 -rw-r--r--    1 root     root           285 May 25 12:48 jest.setup.js
+#12 0.399 -rw-r--r--    1 root     root           211 May 25 18:23 next-env.d.ts
+#12 0.399 -rw-r--r--    1 root     root           133 May 25 12:33 next.config.ts
+#12 0.399 drwxr-xr-x  478 root     root         20480 May 25 18:22 node_modules
+#12 0.399 -rw-r--r--    1 root     root        349394 May 25 12:48 package-lock.json
+#12 0.399 -rw-r--r--    1 root     root           810 May 25 12:48 package.json
+#12 0.399 -rw-r--r--    1 root     root            81 May 25 12:33 postcss.config.mjs
+#12 0.399 drwxr-xr-x    2 root     root          4096 May 25 12:49 public
+#12 0.399 drwxr-xr-x    4 root     root          4096 May 25 12:49 src
+#12 0.399 -rw-r--r--    1 root     root           602 May 25 12:33 tsconfig.json
+#12 0.399 ==== END DIAGNOSTIC FILE LISTING in /app ====
+#12 0.399 ==== START DIAGNOSTIC FILE LISTING in /app/.next ====
+#12 0.403 total 328
+#12 0.403 drwxr-xr-x    7 root     root          4096 May 25 18:23 .
+#12 0.403 drwxr-xr-x    1 root     root          4096 May 25 18:23 ..
+#12 0.403 -rw-r--r--    1 root     root            21 May 25 18:23 BUILD_ID
+#12 0.403 -rw-r--r--    1 root     root           911 May 25 18:22 app-build-manifest.json
+#12 0.403 -rw-r--r--    1 root     root            95 May 25 18:23 app-path-routes-manifest.json
+#12 0.403 -rw-r--r--    1 root     root           995 May 25 18:22 build-manifest.json
+#12 0.403 drwxr-xr-x    5 root     root          4096 May 25 18:23 cache
+#12 0.403 drwxr-xr-x    2 root     root          4096 May 25 18:22 diagnostics
+#12 0.403 -rw-r--r--    1 root     root           111 May 25 18:23 export-marker.json
+#12 0.403 -rw-r--r--    1 root     root           868 May 25 18:23 images-manifest.json
+#12 0.403 -rw-r--r--    1 root     root          8095 May 25 18:23 next-minimal-server.js.nft.json
+#12 0.403 -rw-r--r--    1 root     root         53079 May 25 18:23 next-server.js.nft.json
+#12 0.403 -rw-r--r--    1 root     root            20 May 25 18:22 package.json
+#12 0.403 -rw-r--r--    1 root     root          1797 May 25 18:23 prerender-manifest.json
+#12 0.403 -rw-r--r--    1 root     root             2 May 25 18:22 react-loadable-manifest.json
+#12 0.403 -rw-r--r--    1 root     root          8421 May 25 18:23 required-server-files.json
+#12 0.403 -rw-r--r--    1 root     root          1402 May 25 18:23 routes-manifest.json
+#12 0.403 drwxr-xr-x    5 root     root          4096 May 25 18:23 server
+#12 0.403 drwxr-xr-x    6 root     root          4096 May 25 18:22 static
+#12 0.403 -rw-r--r--    1 root     root        189839 May 25 18:23 trace
+#12 0.403 drwxr-xr-x    3 root     root          4096 May 25 18:22 types
+#12 0.403 ==== END DIAGNOSTIC FILE LISTING in /app/.next ====
+#12 DONE 0.4s
+
+#13 [production 3/5] COPY --from=builder /app/public ./public
+#13 CACHED
+
+#14 [production 4/5] COPY --from=builder /app/package.json ./package.json
+#14 CACHED
+
+#15 [production 5/5] COPY --from=builder /app/next.config.js ./next.config.js
+#15 ERROR: "/app/next.config.js" not found: not found
+
+#16 [production 2/5] COPY --from=builder /app/.next ./.next
+#16 CANCELED
+------
+ > [production 5/5] COPY --from=builder /app/next.config.js ./next.config.js:
+------
+failed to solve: failed to compute cache key: "/app/next.config.js" not found: not found

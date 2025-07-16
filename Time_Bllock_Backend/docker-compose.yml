@@ -1,0 +1,55 @@
+version: '3.8' # Specify docker-compose version
+
+services:
+  app: # This is the backend service
+    build:
+      context: .
+      dockerfile: Dockerfile(backend) # Specify the backend Dockerfile
+    ports:
+      - "${API_PORT:-3000}:${API_PORT:-3000}" # Map host port to container port, using .env or defaulting
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: development 
+      DB_HOST: db # This is the service name of the database container
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_PORT: ${DB_PORT}
+      API_PORT: ${API_PORT:-3000}
+    volumes:
+      - ./bacend:/usr/src/app # Mount the current directory (root) to /usr/src/app in the backend container
+      - /usr/src/app/node_modules # Exclude node_modules from being overwritten by the host mount
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine # Use an official PostgreSQL image
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "${DB_PORT_EXTERNAL:-5433}:${DB_PORT:-5432}" # Map host port to container's PostgreSQL port
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist database data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql # Mount schema.sql to initialize DB
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend # Build context is the frontend directory
+      dockerfile: Dockerfile # Specify the Dockerfile name (optional if it's Dockerfile)
+    ports:
+      - "3001:3000" # Map host port 3001 to container port 3000 (Next.js default)
+    volumes:
+      - ./frontend/src:/app/src # Mount the src directory for live reloading
+      - ./frontend/public:/app/public # Mount public directory for live reloading of static assets
+      # node_modules in the container should be used, not overwritten by a host mount
+      # For Next.js, changes outside src/ and public/ (e.g. package.json, next.config.js)
+      # often require a rebuild of the image.
+    restart: always # Restart policy
+    # depends_on: # Optional: if frontend needs backend to be up before starting
+    #   - app
+
+volumes:
+  pgdata: # Define the named volume for persistent data

@@ -1,0 +1,28 @@
+# Use an official Node.js runtime as a parent image
+FROM node:18-alpine
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json (or yarn.lock)
+COPY package*.json ./
+
+# Install project dependencies
+RUN npm install
+
+# If you are using a private npm registry, you might need to configure .npmrc here
+# COPY .npmrc .npmrc
+# RUN npm ci
+# RUN rm -f .npmrc
+
+# Bundle app source
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE ${API_PORT:-3000} 
+# The ${API_PORT:-3000} syntax means it will use the API_PORT from the .env file at build time if available, 
+# or default to 3000 if not set. However, for runtime port exposure, this is more illustrative.
+# The actual port mapping will be handled in docker-compose.yml.
+
+# Define the command to run the application
+CMD [ "node", "index.js" ]
