@@ -14,7 +14,10 @@ A Node.js and PostgreSQL backend for managing time blocks and groups, containeri
 - [API Endpoints](#api-endpoints)
   - [Block Groups (`/api/groups`)](#block-groups-apigroups)
   - [Time Blocks (`/api/timeblocks`)](#time-blocks-apitimeblocks)
+  - [Timeline Entries (`/api/timeline-entries`)](#timeline-entries-apitimeline-entries)
 - [Database Schema](#database-schema)
+- [Additional Utilities](#additional-utilities)
+  - [Telegram Message Logger (`telegram_to_db.py`)](#telegram-message-logger-telegram_to_dbpy)
 - [Stopping the Application](#stopping-the-application)
 - [Troubleshooting](#troubleshooting)
 
@@ -26,6 +29,8 @@ This project provides a RESTful API for creating, managing, and tracking time bl
 
 -   **Group Management:** Create, read, update, and delete groups.
 -   **Time Block Management:** Create, read, update, and delete time blocks.
+-   **Timeline Entry Management:** Create, read, update, and delete timeline entries.
+-   **Telegram Message Logging:** A utility script (`telegram_to_db.py`) logs messages from a configured Telegram bot to the database.
 -   **Database:** Uses PostgreSQL for data storage.
 -   **Containerized:** Fully containerized using Docker and Docker Compose for easy setup and deployment.
 -   **API:** RESTful API for interaction.
@@ -112,12 +117,53 @@ All endpoints are prefixed with `/api`.
     -   Body: `{ "name": "Updated Task", "color_code": "#C70039", "description": "New details", "duration_min": 75, "group_id": 2 }`
 -   `DELETE /timeblocks/:id`: Remove a time block.
 
+### Timeline Entries (`/api/timeline-entries`)
+
+-   `POST /`: Create a new timeline entry.
+    -   Body example: `{ "time_block_id": 1, "start_time": "2024-01-01T10:00:00Z", "end_time": "2024-01-01T11:00:00Z" }`
+    -   Required fields: `time_block_id`, `start_time`, `end_time`.
+-   `GET /`: Get all timeline entries. Can also be filtered by `startDate` and `endDate` query parameters.
+    -   Example: `/api/timeline-entries?startDate=2024-01-01T00:00:00Z&endDate=2024-01-31T23:59:59Z`
+-   `PUT /:id`: Update an existing timeline entry by its ID.
+    -   Body example: `{ "time_block_id": 2, "start_time": "2024-01-01T10:30:00Z", "end_time": "2024-01-01T11:30:00Z" }`
+    -   Note: At least one field (`time_block_id`, `start_time`, `end_time`) must be provided for an update. If `start_time` or `end_time` is being updated, both must be provided.
+-   `DELETE /:id`: Delete a timeline entry by its ID.
+
 ## Database Schema
 
-The database schema is defined in `db/schema.sql`. It consists of two main tables:
+The database schema is defined in `db/schema.sql`. It now includes the following main tables:
 
--   `block_group`: Stores group information (`id`, `name`).
--   `time_block`: Stores time block details (`id`, `name`, `color_code`, `description`, `duration_min`, `group_id`). `group_id` is a foreign key to `block_group.id`.
+-   `block_group`: Stores group information (`id` SERIAL PRIMARY KEY, `name` VARCHAR(255) UNIQUE NOT NULL).
+-   `time_block`: Stores time block details (`id` SERIAL PRIMARY KEY, `name` VARCHAR(255) NOT NULL, `color_code` VARCHAR(7), `description` TEXT, `duration_min` INTEGER, `group_id` INTEGER, FOREIGN KEY (`group_id`) REFERENCES `block_group`(`id`) ON DELETE SET NULL).
+-   `timeline_entries`: Stores entries for the timeline.
+    -   Columns: `id` (SERIAL PRIMARY KEY), `time_block_id` (INTEGER, FOREIGN KEY to `time_block.id` ON DELETE CASCADE), `start_time` (TIMESTAMPTZ NOT NULL), `end_time` (TIMESTAMPTZ NOT NULL).
+    -   Constraint: `CHECK (end_time > start_time)`.
+-   Additionally, the `conversations` table is used by the `telegram_to_db.py` script to log Telegram messages.
+    -   Columns: `id` (SERIAL PRIMARY KEY), `log_timestamp` (TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP), `message_timestamp` (TIMESTAMPTZ NOT NULL), `message_text` (TEXT NOT NULL).
+
+## Additional Utilities
+
+### Telegram Message Logger (`telegram_to_db.py`)
+
+**Purpose:** This Python script (`telegram_to_db.py`), located in the `bacend` directory, connects to a Telegram Bot to listen for messages and saves them into the `conversations` table in the PostgreSQL database.
+
+**Setup & Configuration:**
+The script requires the following environment variables to be set:
+-   `TELEGRAM_BOT_TOKEN`: Your Telegram Bot's API token. This should be set in your environment or a `.env` file.
+-   Database connection variables (typically from your main `.env` file):
+    -   `DB_HOST`
+    -   `DB_PORT` (Note: this should be the *external* port if running the script outside of Docker, e.g., `DB_PORT_EXTERNAL`'s value like `5433`, or the internal `DB_PORT` like `5432` if running inside a Docker container that's on the same network as the DB).
+    -   `DB_DATABASE` (or the equivalent variable name your script uses, e.g., `DB_NAME` if referenced in script comments. Ensure this matches the actual database name specified in your `.env` for the project, e.g., `DB_DATABASE=timeblock_db`).
+    -   `DB_USER`
+    -   `DB_PASSWORD`
+
+**Running the script:**
+-   The script can be run directly using Python (e.g., `python telegram_to_db.py`) from the `bacend` directory, provided the necessary Python environment and dependencies are installed.
+-   You will likely need to install these dependencies using pip:
+    ```bash
+    pip install psycopg2-binary python-telegram-bot python-dotenv
+    ```
+-   This script is not automatically run by `docker-compose up` with the current project configuration, as it's not defined as a service in the `docker-compose.yml` file. It's intended for standalone execution or could be added as a separate Docker service if continuous operation is desired.
 
 ## Stopping the Application
 
